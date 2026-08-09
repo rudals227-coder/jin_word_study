@@ -74,6 +74,10 @@ export function mount(container, params) {
 - `index.html` viewport 메타로 핀치/더블탭 줌 차단, `viewport-fit=cover`로 노치 영역 활용.
 - `main.js`에서 Safari 제스처/더블탭/멀티터치 확대를 JS로 추가 차단.
 - body는 `overscroll-behavior: none`(당겨서 새로고침/바운스 방지). `styles.css`에 정의됨.
+- **페이지는 절대 스크롤되지 않는다.** `html, body { height:100%; overflow:hidden }` 이고 모든 화면이 한 화면에 들어가야 한다.
+  스크롤이 생기면 iOS 주소창이 접혔다 펴지면서 뷰포트 높이가 바뀌어 **화면이 커졌다 작아지는 현상**이 생긴다.
+  같은 이유로 `dvh`/`vh` 단위로 높이를 잡지 말고 `height:100%` 를 쓴다.
+- 크기는 `clamp(최소, N vh, 최대)` 로 잡아 화면이 짧아지면 알아서 줄어들게 한다. 새 화면도 이 방식을 따를 것.
 - **아이 대상**이므로 큰 터치 타깃(60px+)·큰 글씨·강한 색 대비·즉각 피드백을 기본으로.
 - 레이아웃은 `safe-area-inset` 여백을 반영.
 

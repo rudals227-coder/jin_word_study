@@ -7,6 +7,8 @@ import { countKnown } from '../model/progress.js';
 import { buildBackup, parseBackup, countBackup, applyBackup } from '../model/backup.js';
 import { saveTextFile, pickTextFile } from '../engine/file.js';
 
+const LOCK_AFTER = 20000; // 자물쇠를 풀어둔 채 두면 아이가 눌러버린다 → 자동 재잠금(ms)
+
 export function mountHome(container) {
   const home = el('div', 'home');
 
@@ -42,18 +44,39 @@ export function mountHome(container) {
   grid.append(random);
   home.append(grid);
 
-  // ---- 백업/복원 (어른용) — 작게, 눈에 덜 띄게 ----
+  // ---- 백업/복원 (어른용) — 자물쇠를 풀어야 눌린다 ----
   const note = el('div', 'tool-note');
+  const backupBtn = button('백업', onBackup, 'tool-btn');
+  const restoreBtn = button('복원', onRestore, 'tool-btn');
+  const lockBtn = button('🔒', toggleLock, 'lock-btn');
+  let unlocked = false;
+  let lockTimer = null;
+
   const tools = el('div', 'home-tools');
-  tools.append(
-    button('백업', onBackup, 'tool-btn'),
-    button('복원', onRestore, 'tool-btn')
-  );
+  tools.append(lockBtn, backupBtn, restoreBtn);
   home.append(tools, note);
+  setLocked(true);
 
   container.appendChild(home);
 
+  function setLocked(locked) {
+    unlocked = !locked;
+    lockBtn.textContent = locked ? '🔒' : '🔓';
+    lockBtn.classList.toggle('unlocked', !locked);
+    backupBtn.disabled = locked;
+    restoreBtn.disabled = locked;
+    if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
+    if (!locked) lockTimer = setTimeout(() => setLocked(true), LOCK_AFTER);
+  }
+
+  function toggleLock() {
+    const willUnlock = !unlocked;
+    setLocked(!willUnlock);
+    say(willUnlock ? '잠금을 풀었어요. 20초 뒤 다시 잠깁니다.' : '');
+  }
+
   async function onBackup() {
+    if (!unlocked) return;
     const now = new Date();
     const data = buildBackup(now.toISOString());
     const n = countBackup(data);
@@ -65,12 +88,14 @@ export function mountHome(container) {
       const how = await saveTextFile(name, text);
       if (how === 'cancel') return;
       say(`${n}개 기록을 ${name} 로 내보냈어요.`);
+      setLocked(true);
     } catch {
       showRaw(text);  // 공유·다운로드 둘 다 막힌 환경
     }
   }
 
   async function onRestore() {
+    if (!unlocked) return;
     let picked;
     try {
       picked = await pickTextFile();
@@ -115,6 +140,7 @@ export function mountHome(container) {
   }
 
   return function unmount() {
+    if (lockTimer) clearTimeout(lockTimer);
     clear(container);
   };
 }

@@ -59,7 +59,8 @@ export function mount(container, { deckId } = {}) {
 
   const grid = el('div', 'qz-choices');
 
-  screen.append(topbar, bar, badge, stage, grid);
+  // 위/아래 빈 공간의 비율은 CSS 가 정한다(아래를 더 크게 → 덩어리가 위로 올라온다).
+  screen.append(topbar, bar, badge, el('div', 'qz-space-top'), stage, grid, el('div', 'qz-space-bottom'));
   container.appendChild(screen);
   next();
 
@@ -86,9 +87,14 @@ export function mount(container, { deckId } = {}) {
 
     // 보기는 그 단어의 원래 테마에서 먼저 뽑는다 — 랜덤 모드에서도 난이도가 유지된다.
     const origin = getDeck(w.deckId) || deck;
-    for (const meaning of makeChoices(w, origin, DECKS)) {
-      grid.append(button(meaning, () => answer(meaning), 'qz-choice'));
-    }
+    makeChoices(w, origin, DECKS).forEach((meaning, i) => {
+      const b = el('button', 'qz-choice');
+      // 번호가 버튼 안에 들어가므로 정답 비교는 textContent 가 아니라 이 값으로 한다.
+      b.dataset.meaning = meaning;
+      b.append(el('span', 'qz-num', String(i + 1)), el('span', 'qz-label', meaning));
+      b.addEventListener('click', () => answer(meaning));
+      grid.append(b);
+    });
     renderProgress(progress);
   }
 
@@ -102,7 +108,7 @@ export function mount(container, { deckId } = {}) {
     // 틀려도 정답은 알려주지 않는다 — 그 단어는 풀에 남아 다시 나온다.
     // 고른 버튼만 표시하고, 나머지는 건드리지 않는다.
     for (const b of grid.children) {
-      if (b.textContent === picked) b.classList.add(ok ? 'correct' : 'wrong');
+      if (b.dataset.meaning === picked) b.classList.add(ok ? 'correct' : 'wrong');
     }
     qMark.textContent = ok ? '⭕' : '❌ 아니에요';
     qMark.classList.add(ok ? 'ok' : 'no');
