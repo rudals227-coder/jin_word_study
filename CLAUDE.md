@@ -24,6 +24,8 @@
 **단일 페이지 + 해시 라우팅.** 서버 설정 없이 정적 URL로 동작하도록 history API 대신 해시를 쓴다. 어떤 경로에서 새로고침해도 안전.
 - `#/` → 홈 (`src/home/home.js`) — 덱(주제) 카드 그리드
 - `#/quiz/<id>` → 해당 테마의 4지선다 퀴즈
+- `#/level/<n>` → 홈을 그 레벨로. 레벨은 URL 에 둔다 — 새로고침에 안전하고,
+  퀴즈를 마치고 `← 홈` 을 눌렀을 때 원래 레벨로 복귀해야 하기 때문.
 
 라우터(`src/router.js`)는 화면 전환 시 **이전 화면의 unmount를 반드시 호출**해 이벤트·DOM을 정리한다. 학습 화면 로드는 동적 import라 코드 스플리팅된다.
 
@@ -63,6 +65,11 @@ export function mount(container, params) {
 ### 새 것 추가 절차
 
 - **새 덱(단어 묶음)**: `src/data/decks.js`의 `DECKS` 배열에 객체 하나 추가 → 홈 카드 자동 생성. (뷰/라우터 수정 불필요)
+  - **★ 덱 id 는 레벨을 통틀어 유일해야 한다.** 진행상황 저장 키(`jws:progress:<덱id>`)와
+    백업 파일의 키가 곧 덱 id 다. 레벨 2 에서 `fruits` 를 재사용하면 레벨 1 기록과 뒤섞인다.
+    레벨 1 은 기존 id 유지, **레벨 2 이상은 `l2-` 접두사**(`l2-fruits`). `idPrefix(level)` 참고.
+    이 규칙만 지키면 `model/backup.js`·`model/progress.js` 는 손댈 필요가 없다.
+  - 새 레벨을 열려면 `LEVELS` 에서 그 레벨의 `ready` 를 `true` 로 바꾼다. `false` 면 홈이 'coming soon' 만 띄운다.
 - **새 학습 화면(퀴즈 등)**:
   1. `src/screens/<id>/index.js` 생성 — `mount/unmount` 계약 구현.
   2. `src/screens/registry.js`에 `{ <id>: { load: () => import('./<id>/index.js') } }` 추가.

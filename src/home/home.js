@@ -1,48 +1,73 @@
-// 홈 — 테마 카드 그리드 + 맨 끝에 랜덤 카드, 하단에 백업/복원.
-// 우상단 배지에 지금까지 알게 된 단어 수를 누적으로 보여준다.
-// 계약: mountHome(container) → unmount().
+// 홈 — 제목 옆 레벨 전환(1~5) + 테마 카드 그리드 + 랜덤 카드, 하단에 백업/복원.
+// 아직 단어가 없는 레벨(ready:false)은 카드 대신 'coming soon' 만 보여준다.
+// 계약: mountHome(container, { level }) → unmount().
 import { el, clear, button } from '../engine/dom.js';
-import { DECKS, RANDOM_DECK } from '../data/decks.js';
+import { LEVELS, getLevel, getDecks, randomDeckFor } from '../data/decks.js';
 import { countKnown } from '../model/progress.js';
 import { buildBackup, parseBackup, countBackup, applyBackup } from '../model/backup.js';
 import { saveTextFile, pickTextFile } from '../engine/file.js';
 
 const LOCK_AFTER = 20000; // 자물쇠를 풀어둔 채 두면 아이가 눌러버린다 → 자동 재잠금(ms)
 
-export function mountHome(container) {
+export function mountHome(container, { level = 1 } = {}) {
+  const lv = getLevel(level) || LEVELS[0];
+  const decks = getDecks(lv.n);
+
   const home = el('div', 'home');
 
   let knownAll = 0;
   let totalAll = 0;
-  for (const d of DECKS) {
+  for (const d of decks) {
     knownAll += countKnown(d.id, d.words);
     totalAll += d.words.length;
   }
 
-  const title = el('div', 'home-title');
-  title.append(el('div', 'brand', '📚 진 단어공부'));
+  // ---- 헤더: 제목 + 레벨 버튼 ... 알아요 배지 ----
+  const levelRow = el('div', 'level-row');
+  for (const item of LEVELS) {
+    const b = button(item.title, () => { location.hash = `#/level/${item.n}`; }, 'level-btn');
+    if (item.n === lv.n) b.classList.add('active');
+    if (!item.ready) b.classList.add('soon');
+    levelRow.append(b);
+  }
 
-  const badge = el('div', 'know-badge');
-  badge.append(
-    el('div', 'know-num', String(knownAll)),
-    el('div', 'know-label', '알아요')
-  );
+  const title = el('div', 'home-title');
+  title.append(el('div', 'brand', '📚 진 단어공부'), levelRow);
 
   const header = el('div', 'home-header');
-  header.append(title, badge);
+  header.append(title);
+
+  // 준비 안 된 레벨에서 '0 알아요'를 띄우면 다 잊은 것처럼 보인다 → 배지를 감춘다.
+  if (lv.ready) {
+    const badge = el('div', 'know-badge');
+    badge.append(
+      el('div', 'know-num', String(knownAll)),
+      el('div', 'know-label', '알아요')
+    );
+    header.append(badge);
+  }
   home.append(header);
 
-  const grid = el('div', 'deck-grid');
-  for (const deck of DECKS) {
-    grid.append(
-      deckCard(deck, countKnown(deck.id, deck.words), deck.words.length, `#/quiz/${deck.id}`)
+  // ---- 본문: 카드 그리드 또는 coming soon ----
+  if (lv.ready) {
+    const grid = el('div', 'deck-grid');
+    for (const deck of decks) {
+      grid.append(deckCard(deck, countKnown(deck.id, deck.words), deck.words.length));
+    }
+    // 랜덤은 별도 단어 목록이 아니라 그 레벨 전체를 섞은 것 → 합계를 그대로 쓴다.
+    const random = deckCard(randomDeckFor(lv.n), knownAll, totalAll);
+    random.classList.add('random');
+    grid.append(random);
+    home.append(grid);
+  } else {
+    const soon = el('div', 'coming-soon');
+    soon.append(
+      el('div', 'soon-emoji', '🚧'),
+      el('div', 'soon-title', 'coming soon'),
+      el('div', 'soon-sub', `${lv.title} 단어는 아직 준비 중이에요.`)
     );
+    home.append(soon);
   }
-  // 랜덤은 별도 단어 목록이 아니라 전체를 섞은 것 → 합계를 그대로 쓴다.
-  const random = deckCard(RANDOM_DECK, knownAll, totalAll, `#/quiz/${RANDOM_DECK.id}`);
-  random.classList.add('random');
-  grid.append(random);
-  home.append(grid);
 
   // ---- 백업/복원 (어른용) — 자물쇠를 풀어야 눌린다 ----
   const note = el('div', 'tool-note');
@@ -75,6 +100,7 @@ export function mountHome(container) {
     say(willUnlock ? '잠금을 풀었어요. 20초 뒤 다시 잠깁니다.' : '');
   }
 
+  // 백업은 레벨과 무관하게 전체 기록을 담는다(덱 id 가 전역 유일하므로 그대로 된다).
   async function onBackup() {
     if (!unlocked) return;
     const now = new Date();
@@ -116,7 +142,7 @@ export function mountHome(container) {
     const when = String(data.savedAt || '').slice(0, 10);
     if (!confirm(`백업(${when})에 '알아요' ${n}개가 들어 있어요.\n지금 기록을 덮어씁니다. 계속할까요?`)) return;
 
-    const { applied, skipped } = applyBackup(data);
+    const { applied } = applyBackup(data);
     if (applied === 0) { say('복원할 테마가 없었어요.'); return; }
     // 카드·배지 숫자를 다시 그리려면 화면을 새로 그려야 한다.
     location.reload();
@@ -145,7 +171,7 @@ export function mountHome(container) {
   };
 }
 
-function deckCard(deck, known, total, href) {
+function deckCard(deck, known, total) {
   const card = el('button', 'deck-card');
   card.style.setProperty('--accent', deck.accent);
   card.innerHTML =
@@ -153,6 +179,6 @@ function deckCard(deck, known, total, href) {
     `<div class="deck-title">${deck.title}</div>` +
     `<div class="deck-meta">${known}/${total} 알아요</div>` +
     `<div class="deck-bar"><span style="width:${total ? (known / total) * 100 : 0}%"></span></div>`;
-  card.addEventListener('click', () => { location.hash = href; });
+  card.addEventListener('click', () => { location.hash = `#/quiz/${deck.id}`; });
   return card;
 }

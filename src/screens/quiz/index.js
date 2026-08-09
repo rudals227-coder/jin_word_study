@@ -5,22 +5,25 @@
 //   각 단어의 원래 테마(w.deckId)에 기록해 진행률이 두 번 세어지지 않게 한다.
 // 계약: mount(container, { deckId }) → unmount().
 import { el, clear, button } from '../../engine/dom.js';
-import { DECKS, RANDOM_DECK, allWords, getDeck } from '../../data/decks.js';
+import { getDecks, randomDeckFor, levelOfRandomId, allWords, getDeck } from '../../data/decks.js';
 import { makeChoices, pickNext, pickReview } from '../../model/quiz.js';
 import { getProgress, recordAnswer, isMastered } from '../../model/progress.js';
 import { playCorrect, playWrong } from '../../engine/sound.js';
 
-// 랜덤이면 전체 단어, 아니면 해당 테마. 어느 쪽이든 단어에 소속 테마 id를 붙여 둔다.
+// 랜덤이면 그 레벨 전체 단어, 아니면 해당 테마. 어느 쪽이든 소속 테마 id(deckId)를 붙여 둔다.
 function buildDeck(id) {
-  if (id === RANDOM_DECK.id) return { ...RANDOM_DECK, words: allWords() };
+  const randomLevel = levelOfRandomId(id);
+  if (randomLevel !== null) {
+    return { ...randomDeckFor(randomLevel), words: allWords(randomLevel) };
+  }
   const d = getDeck(id);
   return d ? { ...d, words: d.words.map((w) => ({ ...w, deckId: d.id })) } : null;
 }
 
-// 테마별 진행상황을 한 번에 읽어 둔다(단어마다 localStorage를 읽으면 느리다).
-function readProgress() {
+// 같은 레벨 테마들의 진행상황을 한 번에 읽어 둔다(단어마다 localStorage를 읽으면 느리다).
+function readProgress(level) {
   const m = {};
-  for (const d of DECKS) m[d.id] = getProgress(d.id);
+  for (const d of getDecks(level)) m[d.id] = getProgress(d.id);
   return m;
 }
 
@@ -40,7 +43,8 @@ export function mount(container, { deckId } = {}) {
 
   // 상단바
   const topbar = el('div', 'fc-topbar');
-  const back = button('← 홈', () => { location.hash = '#/'; });
+  // 원래 있던 레벨로 돌아간다. 그냥 '#/' 로 보내면 항상 레벨 1 로 떨어진다.
+  const back = button('← 홈', () => { location.hash = `#/level/${deck.level}`; });
   const counter = el('div', 'fc-counter');
   topbar.append(back, el('div', 'fc-title', `${deck.emoji} ${deck.title}`), counter);
 
@@ -70,7 +74,7 @@ export function mount(container, { deckId } = {}) {
     qMark.textContent = '';
     qMark.className = 'qz-mark';
 
-    const progress = readProgress();
+    const progress = readProgress(deck.level);
     const isDone = (w) => isMastered(progress[w.deckId], w.id);
     let w = review ? pickReview(words, recent) : pickNext(words, isDone, recent);
     if (!w) {                       // 다 맞혔다 → 복습 모드
@@ -87,7 +91,7 @@ export function mount(container, { deckId } = {}) {
 
     // 보기는 그 단어의 원래 테마에서 먼저 뽑는다 — 랜덤 모드에서도 난이도가 유지된다.
     const origin = getDeck(w.deckId) || deck;
-    makeChoices(w, origin, DECKS).forEach((meaning, i) => {
+    makeChoices(w, origin, getDecks(deck.level)).forEach((meaning, i) => {
       const b = el('button', 'qz-choice');
       // 번호가 버튼 안에 들어가므로 정답 비교는 textContent 가 아니라 이 값으로 한다.
       b.dataset.meaning = meaning;
@@ -118,7 +122,7 @@ export function mount(container, { deckId } = {}) {
   }
 
   function renderProgress(progress) {
-    const p = progress || readProgress();
+    const p = progress || readProgress(deck.level);
     const known = words.reduce((n, w) => n + (isMastered(p[w.deckId], w.id) ? 1 : 0), 0);
     counter.textContent = `${known} / ${words.length}`;
     barFill.style.width = `${(known / words.length) * 100}%`;

@@ -21,6 +21,7 @@ export const DECKS = [
     title: '과일',
     emoji: '🍎',
     accent: '#ff6b6b',
+    level: 1,
     words: [
       { id: 'apple', word: 'apple', meaning: '사과', emoji: '🍎', example: 'I eat an apple every day.' },
       { id: 'banana', word: 'banana', meaning: '바나나', emoji: '🍌', example: 'The monkey ate a banana.' },
@@ -54,6 +55,7 @@ export const DECKS = [
     title: '동물',
     emoji: '🐶',
     accent: '#4dabf7',
+    level: 1,
     words: [
       { id: 'dog', word: 'dog', meaning: '강아지', emoji: '🐶', example: 'My dog runs very fast.' },
       { id: 'cat', word: 'cat', meaning: '고양이', emoji: '🐱', example: 'The cat is sleeping now.' },
@@ -92,6 +94,7 @@ export const DECKS = [
     title: '색깔·모양',
     emoji: '🌈',
     accent: '#a06cf0',
+    level: 1,
     words: [
       { id: 'red', word: 'red', meaning: '빨강', emoji: '🔴', example: 'My school bag is red.' },
       { id: 'blue', word: 'blue', meaning: '파랑', emoji: '🔵', example: 'The sky is blue today.' },
@@ -121,6 +124,7 @@ export const DECKS = [
     title: '음식',
     emoji: '🍚',
     accent: '#ff922b',
+    level: 1,
     words: [
       { id: 'rice', word: 'rice', meaning: '밥', emoji: '🍚', example: 'I eat rice for dinner.' },
       { id: 'bread', word: 'bread', meaning: '빵', emoji: '🍞', example: 'She bought fresh bread.' },
@@ -159,6 +163,7 @@ export const DECKS = [
     title: '학교',
     emoji: '🏫',
     accent: '#20c997',
+    level: 1,
     words: [
       { id: 'school', word: 'school', meaning: '학교', emoji: '🏫', example: 'I walk to school.' },
       { id: 'teacher', word: 'teacher', meaning: '선생님', emoji: '👩‍🏫', example: 'Our teacher is very kind.' },
@@ -197,6 +202,7 @@ export const DECKS = [
     title: '몸',
     emoji: '🧍',
     accent: '#f06595',
+    level: 1,
     words: [
       { id: 'head', word: 'head', meaning: '머리', example: 'He hurt his head.' },
       { id: 'hair', word: 'hair', meaning: '머리카락', example: 'Her hair is very long.' },
@@ -230,6 +236,7 @@ export const DECKS = [
     title: '옷',
     emoji: '👕',
     accent: '#7950f2',
+    level: 1,
     words: [
       { id: 'shirt', word: 'shirt', meaning: '셔츠', emoji: '👕', example: 'My shirt is blue.' },
       { id: 'pants', word: 'pants', meaning: '바지', emoji: '👖', example: 'These pants are too big.' },
@@ -263,6 +270,7 @@ export const DECKS = [
     title: '집',
     emoji: '🏠',
     accent: '#f59f00',
+    level: 1,
     words: [
       { id: 'house', word: 'house', meaning: '집', emoji: '🏠', example: 'Our house is near the park.' },
       { id: 'door', word: 'door', meaning: '문', emoji: '🚪', example: 'Please close the door.' },
@@ -301,6 +309,7 @@ export const DECKS = [
     title: '탈것',
     emoji: '🚗',
     accent: '#339af0',
+    level: 1,
     words: [
       { id: 'car', word: 'car', meaning: '자동차', emoji: '🚗', example: 'Dad washed the car.' },
       { id: 'bus', word: 'bus', meaning: '버스', emoji: '🚌', example: 'I take the bus to school.' },
@@ -334,6 +343,7 @@ export const DECKS = [
     title: '자연·날씨',
     emoji: '🌦️',
     accent: '#51cf66',
+    level: 1,
     words: [
       { id: 'sun', word: 'sun', meaning: '해', emoji: '☀️', example: 'The sun is very bright.' },
       { id: 'moon', word: 'moon', meaning: '달', emoji: '🌙', example: 'The moon is round tonight.' },
@@ -370,6 +380,7 @@ export const DECKS = [
     title: '사람·직업',
     emoji: '🧑‍🍳',
     accent: '#e8590c',
+    level: 1,
     words: [
       { id: 'doctor', word: 'doctor', meaning: '의사', emoji: '👨‍⚕️', example: 'The doctor helped me.' },
       { id: 'nurse', word: 'nurse', meaning: '간호사', emoji: '👩‍⚕️', example: 'The nurse is very kind.' },
@@ -403,6 +414,7 @@ export const DECKS = [
     title: '움직임',
     emoji: '🏃',
     accent: '#12b886',
+    level: 1,
     words: [
       { id: 'run', word: 'run', meaning: '달리다', emoji: '🏃', example: 'I run in the park.' },
       { id: 'walk', word: 'walk', meaning: '걷다', emoji: '🚶', example: 'We walk to school together.' },
@@ -441,6 +453,7 @@ export const DECKS = [
     title: '반대말',
     emoji: '↔️',
     accent: '#868e96',
+    level: 1,
     words: [
       { id: 'big', word: 'big', meaning: '큰', example: 'The elephant is very big.' },
       { id: 'small', word: 'small', meaning: '작은', example: 'A mouse is very small.' },
@@ -479,6 +492,7 @@ export const DECKS = [
     title: '시간·달력',
     emoji: '📅',
     accent: '#4c6ef5',
+    level: 1,
     words: [
       { id: 'monday', word: 'Monday', meaning: '월요일', example: 'School starts on Monday.' },
       { id: 'tuesday', word: 'Tuesday', meaning: '화요일', example: 'We have art on Tuesday.' },
@@ -507,6 +521,7 @@ export const DECKS = [
     title: '숫자',
     emoji: '🔢',
     accent: '#7048e8',
+    level: 1,
     words: [
       { id: 'one', word: 'one', meaning: '하나', example: 'I have one apple.' },
       { id: 'two', word: 'two', meaning: '둘', example: 'Two birds are singing.' },
@@ -535,6 +550,7 @@ export const DECKS = [
     title: '스포츠·취미',
     emoji: '⚽',
     accent: '#2b8a3e',
+    level: 1,
     words: [
       { id: 'soccer', word: 'soccer', meaning: '축구', emoji: '⚽', example: 'We play soccer after school.' },
       { id: 'baseball', word: 'baseball', meaning: '야구', emoji: '⚾', example: 'Baseball is popular here.' },
@@ -563,6 +579,7 @@ export const DECKS = [
     title: '장소·건물',
     emoji: '🏥',
     accent: '#0ca678',
+    level: 1,
     words: [
       { id: 'hospital', word: 'hospital', meaning: '병원', emoji: '🏥', example: 'The hospital is very quiet.' },
       { id: 'bank', word: 'bank', meaning: '은행', emoji: '🏦', example: 'The bank opens at nine.' },
@@ -591,6 +608,7 @@ export const DECKS = [
     title: '감정',
     emoji: '😀',
     accent: '#e64980',
+    level: 1,
     words: [
       { id: 'angry', word: 'angry', meaning: '화난', emoji: '😠', example: 'He is angry with me.' },
       { id: 'tired', word: 'tired', meaning: '피곤한', emoji: '😫', example: 'I am tired after running.' },
@@ -619,6 +637,7 @@ export const DECKS = [
     title: '이것저것',
     emoji: '📌',
     accent: '#adb5bd',
+    level: 1,
     words: [
       { id: 'money', word: 'money', meaning: '돈', emoji: '💰', example: 'I saved my money.' },
       { id: 'music', word: 'music', meaning: '음악', emoji: '🎶', example: 'The music is very soft.' },
@@ -644,18 +663,44 @@ export const DECKS = [
   },
 ];
 
-// 랜덤 테마는 별도의 단어 목록이 아니라, 위 모든 테마의 단어를 한 풀로 합친 것이다.
-// 홈 카드로만 존재하고 DECKS 에는 넣지 않는다(넣으면 합계·진행률이 두 번 세어진다).
-export const RANDOM_DECK = {
-  id: 'random',
-  title: '랜덤',
-  emoji: '🎲',
-  accent: '#5c7cfa',
-};
+// 레벨 — 홈 상단에서 전환한다. ready:false 면 아직 단어가 없어 'coming soon' 만 보여준다.
+export const LEVELS = [
+  { n: 1, title: '레벨 1', ready: true },
+  { n: 2, title: '레벨 2', ready: false },
+  { n: 3, title: '레벨 3', ready: false },
+  { n: 4, title: '레벨 4', ready: false },
+  { n: 5, title: '레벨 5', ready: false },
+];
 
-// 전체 단어를 한 배열로. 각 단어에 원래 테마 id(deckId)를 붙여 진행상황을 제자리에 기록한다.
-export function allWords() {
-  return DECKS.flatMap((d) => d.words.map((w) => ({ ...w, deckId: d.id })));
+// ★ 덱 id 는 레벨을 통틀어 유일해야 한다.
+//   진행상황 저장 키(jws:progress:<덱id>)와 백업 파일의 키가 곧 덱 id 이므로,
+//   레벨 2 에서 'fruits' 를 재사용하면 레벨 1 기록과 뒤섞인다.
+//   레벨 1 은 기존 id 를 그대로 두고(기존 기록·백업 보존), 레벨 2 이상은 'l2-' 접두사를 붙인다.
+export const idPrefix = (level) => (level === 1 ? '' : `l${level}-`);
+
+export function getLevel(n) {
+  return LEVELS.find((l) => l.n === n) || null;
+}
+
+export function getDecks(level) {
+  return DECKS.filter((d) => d.level === level);
+}
+
+// 랜덤 카드 — 별도 단어 목록이 아니라 그 레벨 전체를 섞은 것.
+// DECKS 에는 넣지 않는다(넣으면 합계·진행률이 두 번 세어진다).
+export function randomDeckFor(level) {
+  return { id: `${idPrefix(level)}random`, title: '랜덤', emoji: '🎲', accent: '#5c7cfa', level };
+}
+
+// 랜덤 카드 id 면 그 레벨을, 아니면 null.
+export function levelOfRandomId(id) {
+  const found = LEVELS.find((l) => `${idPrefix(l.n)}random` === id);
+  return found ? found.n : null;
+}
+
+// 그 레벨의 모든 단어. 각 단어에 원래 테마 id(deckId)를 붙여 진행상황을 제자리에 기록한다.
+export function allWords(level) {
+  return getDecks(level).flatMap((d) => d.words.map((w) => ({ ...w, deckId: d.id })));
 }
 
 export function getDeck(id) {

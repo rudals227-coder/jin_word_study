@@ -1,6 +1,9 @@
 // 해시 기반 라우터 (게임 프로젝트와 동일한 방식).
-//   #/            → 홈(테마 목록)
-//   #/quiz/<id>   → 4지선다 퀴즈
+//   #/             → 홈 (레벨 1)
+//   #/level/<n>    → 홈을 그 레벨로
+//   #/quiz/<id>    → 4지선다 퀴즈
+// 레벨을 URL 에 두는 이유: 새로고침해도 안전하고, 퀴즈를 마치고 홈으로 돌아올 때
+// 원래 레벨로 복귀해야 하기 때문. 메모리 상태로 두면 매번 레벨 1 로 떨어진다.
 // 화면 이탈 시 이전 화면의 unmount 를 호출해 타이머·이벤트·DOM 을 정리한다.
 import { mountHome } from './home/home.js';
 import { getScreen } from './screens/registry.js';
@@ -28,13 +31,17 @@ export function startRouter(container) {
       return;
     }
     // 기본: 홈
-    currentUnmount = mountHome(container);
+    currentUnmount = mountHome(container, { level: route.level });
   }
 
   function parseHash(hash) {
     const parts = (hash || '').replace(/^#/, '').split('/').filter(Boolean); // ['quiz','fruits']
     if (SCREEN_BY_ROUTE[parts[0]] && parts[1]) return { name: parts[0], id: parts[1] };
-    return { name: 'home' };
+    if (parts[0] === 'level' && parts[1]) {
+      const n = Number(parts[1]);
+      return { name: 'home', level: Number.isInteger(n) && n > 0 ? n : 1 };
+    }
+    return { name: 'home', level: 1 };
   }
 
   window.addEventListener('hashchange', render);

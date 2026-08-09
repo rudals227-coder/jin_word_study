@@ -64,8 +64,37 @@ button:active { transform: translateY(2px); }
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding-bottom: clamp(8px, 1.8vh, 18px);
 }
-.home-title { min-width: 0; }
-.brand { font-size: clamp(20px, 3.2vh, 30px); font-weight: 900; }
+/* 제목과 레벨 버튼은 폭이 되면 한 줄, 좁으면 다음 줄로 넘긴다. */
+.home-title {
+  min-width: 0; flex: 1 1 auto;
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: clamp(6px, 1.2vh, 14px) clamp(8px, 1.6vh, 18px);
+}
+.brand { font-size: clamp(18px, 3.1vh, 30px); font-weight: 900; }
+
+/* 레벨 전환 — 아직 단어가 없는 레벨은 흐리게 */
+.level-row { display: flex; flex-wrap: wrap; gap: clamp(4px, 0.8vh, 8px); }
+.level-btn {
+  font-size: clamp(11px, 1.7vh, 15px); font-weight: 800;
+  padding: clamp(5px, 1vh, 9px) clamp(8px, 1.5vh, 14px);
+  border-radius: 999px; border-width: 2px;
+  color: var(--muted); background: transparent;
+}
+.level-btn.soon { opacity: 0.55; }
+.level-btn.active {
+  background: var(--text); border-color: var(--text); color: var(--bg);
+  opacity: 1;
+}
+
+/* 아직 준비 안 된 레벨 */
+.coming-soon {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(6px, 1.4vh, 14px); text-align: center; color: var(--muted);
+}
+.soon-emoji { font-size: clamp(40px, 8vh, 80px); }
+.soon-title { font-size: clamp(22px, 4vh, 40px); font-weight: 900; letter-spacing: 1px; color: var(--text); }
+.soon-sub { font-size: clamp(13px, 2vh, 18px); word-break: keep-all; }
 
 /* 우상단 — 지금까지 알게 된 단어 수 */
 .know-badge {
