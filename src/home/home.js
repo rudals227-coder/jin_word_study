@@ -44,7 +44,18 @@ export function mountHome(container, { level = 1 } = {}) {
       el('div', 'know-num', String(knownAll)),
       el('div', 'know-label', '알아요')
     );
-    header.append(badge);
+
+    // 숫자만으로는 얼마나 왔는지 감이 안 온다 → 원형 게이지로 채워진 정도를 같이 보여준다.
+    // 내림으로 계산한다. 반올림하면 473/474 가 100% 로 보여 다 끝낸 줄 안다.
+    const pct = totalAll ? Math.floor((knownAll / totalAll) * 100) : 0;
+    const ring = el('div', 'pct-badge');
+    ring.style.setProperty('--p', String(pct));
+    ring.setAttribute('aria-label', `전체 ${totalAll}개 중 ${pct}% 완료`);
+    ring.append(el('div', 'pct-num', `${pct}%`));
+
+    const stats = el('div', 'home-stats');
+    stats.append(badge, ring);
+    header.append(stats);
   }
   home.append(header);
 
