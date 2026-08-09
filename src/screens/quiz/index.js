@@ -9,6 +9,7 @@ import { getDecks, randomDeckFor, levelOfRandomId, allWords, getDeck } from '../
 import { makeChoices, pickNext, pickReview } from '../../model/quiz.js';
 import { getProgress, recordAnswer, isMastered } from '../../model/progress.js';
 import { playCorrect, playWrong } from '../../engine/sound.js';
+import { speak, cancel as cancelSpeech, supported as canSpeak } from '../../engine/speech.js';
 
 // 랜덤이면 그 레벨 전체 단어, 아니면 해당 테마. 어느 쪽이든 소속 테마 id(deckId)를 붙여 둔다.
 function buildDeck(id) {
@@ -58,8 +59,14 @@ export function mount(container, { deckId } = {}) {
   const stage = el('div', 'qz-stage');
   const qWord = el('div', 'qz-word');
   const qExample = el('div', 'qz-example');
+  // 예문 읽어주기. 탭 핸들러 안에서 호출해야 iOS 에서 소리가 난다.
+  const sayBtn = button('🔊', () => speak(current && current.example), 'qz-say');
+  sayBtn.setAttribute('aria-label', '예문 읽어주기');
+  const exampleRow = el('div', 'qz-example-row');
+  exampleRow.append(sayBtn, qExample);
+  if (!canSpeak()) sayBtn.hidden = true;   // 지원 안 하는 기기면 아예 감춘다
   const qMark = el('div', 'qz-mark');
-  stage.append(qWord, qExample, qMark);
+  stage.append(qWord, exampleRow, qMark);
 
   const grid = el('div', 'qz-choices');
 
@@ -70,6 +77,7 @@ export function mount(container, { deckId } = {}) {
 
   function next() {
     locked = false;
+    cancelSpeech();   // 앞 문제를 읽던 중이면 끊는다
     clear(grid);
     qMark.textContent = '';
     qMark.className = 'qz-mark';
@@ -87,7 +95,7 @@ export function mount(container, { deckId } = {}) {
 
     qWord.textContent = w.word;
     qExample.textContent = w.example || '';
-    qExample.hidden = !w.example;
+    exampleRow.hidden = !w.example;   // 예문이 없으면 스피커까지 같이 감춘다
 
     // 보기는 그 단어의 원래 테마에서 먼저 뽑는다 — 랜덤 모드에서도 난이도가 유지된다.
     const origin = getDeck(w.deckId) || deck;
@@ -130,6 +138,7 @@ export function mount(container, { deckId } = {}) {
 
   return function unmount() {
     if (timer) clearTimeout(timer);
+    cancelSpeech();   // 화면을 떠나도 계속 읽는 것 방지
     clear(container);
   };
 }
