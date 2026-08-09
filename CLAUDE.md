@@ -1,0 +1,81 @@
+# CLAUDE.md
+
+이 파일은 Claude Code(claude.ai/code)가 이 저장소에서 작업할 때 참고하는 안내서다.
+
+## What this is
+
+아이를 위한 **단어공부 웹앱**. 바닐라 JS + HTML + CSS, 빌드는 Vite. PC에서 개발하고 실제 사용은 **아이패드 Safari에서 URL 접속**으로 한다. 백엔드 없음 — 전부 클라이언트 사이드 정적 앱이며, 호스팅은 정적 파일만 서빙한다. (자매 프로젝트 `Jin_game_world`와 동일한 스택/배포 방식을 따른다.)
+
+기획/설계 배경과 단어 기능 아이디어는 [GUIDE.md](GUIDE.md), 실행/구조 요약은 [README.md](README.md) 참고.
+
+## Commands
+
+- `npm install` — 의존성 설치 (Vite만)
+- `npm run dev` — 개발 서버 (HMR)
+- `npm run dev -- --host` — **아이패드 테스트용**. 출력된 Network URL(`http://<PC-LAN-IP>:5173`)을 같은 와이파이의 아이패드 Safari로 접속. Windows 방화벽에서 Node의 사설망 접근 허용 필요.
+- `npm run build` — `dist/`에 정적 빌드
+- `npm run preview` — 빌드 결과 로컬 확인
+- 배포: `main`에 push하면 `.github/workflows/deploy.yml`이 자동 빌드→GitHub Pages 배포. `vite.config.js`의 `base: './'` 덕분에 서브경로에서도 자산 경로가 유지된다.
+
+테스트 러너는 아직 없음. 순수 모델(`model/*.js`)은 DOM에 의존하지 않아 Node로 단위 테스트를 붙이기 쉽다.
+
+## Architecture
+
+**단일 페이지 + 해시 라우팅.** 서버 설정 없이 정적 URL로 동작하도록 history API 대신 해시를 쓴다. 어떤 경로에서 새로고침해도 안전.
+- `#/` → 홈 (`src/home/home.js`) — 덱(주제) 카드 그리드
+- `#/quiz/<id>` → 해당 테마의 4지선다 퀴즈
+
+라우터(`src/router.js`)는 화면 전환 시 **이전 화면의 unmount를 반드시 호출**해 이벤트·DOM을 정리한다. 학습 화면 로드는 동적 import라 코드 스플리팅된다.
+
+### 화면 모듈 계약 (가장 중요)
+
+모든 학습 화면은 `src/screens/<id>/index.js`에서 이 인터페이스를 export한다:
+
+```js
+export function mount(container, params) {
+  // container 안에 DOM 생성 + 화면 시작. params 예: { deckId }
+  return function unmount() {
+    // 타이머·이벤트 해제, DOM 제거
+  };
+}
+```
+
+이 계약만 지키면 화면끼리 서로 몰라도 되고, 라우터가 균일하게 다룬다. (홈은 `mountHome(container)` → unmount 반환.)
+
+### 모델 / 뷰 분리 (원칙)
+
+- **모델(순수)**: `src/model/`(예: `progress.js` 학습 진행상황) — DOM/캔버스를 모른다. 단위 테스트 용이.
+- **데이터(정적)**: `src/data/decks.js` — 단어/덱 데이터. `{ id, word, meaning, emoji }` + 덱 `{ id, title, emoji, accent, words[] }`.
+- **뷰**: `src/home/`, `src/screens/*` — 위 모델/데이터를 DOM 렌더 + 입력으로 연결.
+
+### 공용 유틸 (`src/engine/`) — 재사용 헬퍼, 프레임워크 아님
+
+- `dom.js` — `el(tag,cls,text)`, `clear(node)`, `button(label,onClick,cls)`.
+- `storage.js` — `load(key,fallback)` / `save(key,value)`. `jws:` 네임스페이스로 localStorage 저장.
+- `sound.js` — `playCorrect()` / `playWrong()`. 음원 파일 없이 Web Audio API로 효과음을 합성한다. `AudioContext`는 하나만 만들어 재사용. **iOS는 사용자 제스처(탭) 후에만 소리가 난다** → 버튼 핸들러 안에서 부를 것.
+
+### 참조 구현: 퀴즈 (`src/screens/quiz/`)
+
+`index.js` 한 파일. 단어(+예문)를 크게 보여주고 뜻을 4지선다로 고르게 한다. 정답이면 `⭕`+효과음, 오답이면 `❌ 아니에요`만 띄우고 **정답은 알려주지 않는다**(그 단어는 풀에 남아 다시 나온다). 채점 결과는 `model/progress.js`에 누적되고, 풀을 다 비우면 복습 모드로 전환된다. **문제에는 이모지를 띄우지 않는다 — 답이 그대로 새어나간다.** **새 학습 화면을 만들 때 이 구조를 참고.**
+
+### 새 것 추가 절차
+
+- **새 덱(단어 묶음)**: `src/data/decks.js`의 `DECKS` 배열에 객체 하나 추가 → 홈 카드 자동 생성. (뷰/라우터 수정 불필요)
+- **새 학습 화면(퀴즈 등)**:
+  1. `src/screens/<id>/index.js` 생성 — `mount/unmount` 계약 구현.
+  2. `src/screens/registry.js`에 `{ <id>: { load: () => import('./<id>/index.js') } }` 추가.
+  3. 필요하면 `src/router.js`에 경로(`#/<id>/...`) 추가.
+  4. 모델/뷰 분리를 지킬 것.
+
+## iPad Safari 규약 (전 화면 공통)
+
+- `index.html` viewport 메타로 핀치/더블탭 줌 차단, `viewport-fit=cover`로 노치 영역 활용.
+- `main.js`에서 Safari 제스처/더블탭/멀티터치 확대를 JS로 추가 차단.
+- body는 `overscroll-behavior: none`(당겨서 새로고침/바운스 방지). `styles.css`에 정의됨.
+- **아이 대상**이므로 큰 터치 타깃(60px+)·큰 글씨·강한 색 대비·즉각 피드백을 기본으로.
+- 레이아웃은 `safe-area-inset` 여백을 반영.
+
+## 작업 관례
+
+- Bash 명령 실행 전, 그 명령이 무엇을 왜 하는지 한국어로 짧게 설명한다. (전역 `~/.claude/CLAUDE.md`에도 기록됨)
+- 커밋/푸시는 사용자가 요청할 때만.

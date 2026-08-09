@@ -1,0 +1,144 @@
+/* ---------- reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #fdf6ec;
+  --surface: #ffffff;
+  --text: #3a3226;
+  --muted: #8a7f6d;
+  --accent: #ff6b6b;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  overscroll-behavior: none;                 /* 당겨서 새로고침/바운스 방지 */
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#app { min-height: 100%; padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left); }
+
+/* ---------- 공용 버튼(크고 아이 친화적) ---------- */
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 3px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+button:active { transform: translateY(2px); }
+
+/* ---------- 홈 ---------- */
+.home { max-width: 900px; margin: 0 auto; padding: 20px 18px 60px; }
+.home-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 0 22px;
+}
+.home-title { min-width: 0; }
+.brand { font-size: clamp(22px, 6vw, 30px); font-weight: 900; }
+
+/* 우상단 — 지금까지 알게 된 단어 수 */
+.know-badge {
+  flex: 0 0 auto;
+  min-width: 86px;
+  padding: 12px 16px 10px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, #ffdc7a, #ffb020);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.10), 0 10px 22px rgba(255, 176, 32, 0.35);
+  color: #5c3d00;
+  text-align: center;
+  animation: know-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.know-num { font-size: 36px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.know-label { font-size: 12px; font-weight: 800; margin-top: 5px; opacity: 0.75; }
+
+@keyframes know-pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .know-badge { animation: none; }
+}
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.deck-card {
+  --accent: #ff6b6b;
+  background: var(--surface);
+  border: 4px solid var(--accent);
+  border-radius: 22px;
+  padding: 18px 14px 16px;
+  text-align: center;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.06);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.deck-card:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06); }
+.deck-emoji { font-size: 52px; line-height: 1.1; }
+.deck-title { font-size: 22px; font-weight: 900; }
+.deck-meta { font-size: 12px; color: var(--muted); }
+.deck-bar { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.08); border-radius: 5px; margin-top: 8px; overflow: hidden; }
+.deck-bar span { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+
+/* 랜덤 — 테마가 아니라 전체를 섞은 것이므로 한눈에 다르게 보이도록 채운다. */
+.deck-card.random {
+  background: linear-gradient(160deg, #748ffc, #4c6ef5);
+  border-color: transparent;
+  color: #fff;
+}
+.deck-card.random .deck-meta { color: rgba(255, 255, 255, 0.85); }
+.deck-card.random .deck-bar { background: rgba(255, 255, 255, 0.28); }
+.deck-card.random .deck-bar span { background: #fff; }
+
+/* ---------- 학습 화면 공통 ---------- */
+.screen {
+  --accent: #ff6b6b;
+  max-width: 620px; margin: 0 auto;
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; flex-direction: column;
+  padding: 10px 16px calc(16px + var(--safe-bottom));
+}
+.fc-topbar { display: flex; align-items: center; gap: 10px; }
+.fc-topbar button { padding: 10px 14px; border-radius: 14px; }
+.fc-title { flex: 1; text-align: center; font-size: 18px; font-weight: 900; }
+.fc-counter { font-size: 15px; font-weight: 800; color: var(--muted); min-width: 56px; text-align: right; }
+.fc-bar { height: 10px; background: rgba(0, 0, 0, 0.08); border-radius: 6px; margin: 12px 2px; overflow: hidden; }
+.fc-bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 6px; transition: width 0.25s; }
+
+/* ---------- 퀴즈 ---------- */
+.qz-badge { align-self: center; font-size: 13px; font-weight: 800; color: var(--muted); }
+.qz-badge.hidden { display: none; }
+
+/* 문제를 아래쪽(보기 가까이)에 붙인다. 남는 공간은 위에 둔다. */
+.qz-stage {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  gap: 14px; text-align: center; padding: 12px 0 4px;
+}
+.qz-word { font-size: 56px; font-weight: 900; letter-spacing: 1px; word-break: break-word; }
+.qz-example { font-size: 19px; color: var(--muted); line-height: 1.5; max-width: 92%; }
+.qz-example[hidden] { display: none; }
+.qz-mark { min-height: 48px; font-size: 40px; font-weight: 900; }
+.qz-mark.no { font-size: 28px; color: #c92a2a; }
+
+/* 아래 여백을 남겨 보기 4개를 화면 바닥에서 띄운다 → 문제 쪽으로 올라온다. */
+.qz-choices {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  padding-top: 10px;
+  margin-bottom: clamp(16px, 7vh, 72px);
+}
+.qz-choice { font-size: 23px; padding: 24px 12px; min-height: 92px; }
+.qz-choice.correct { background: #7ed08a; color: #10391a; border-color: transparent; }
+.qz-choice.wrong { background: #ffa8a8; color: #5c1010; border-color: transparent; }
