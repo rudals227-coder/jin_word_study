@@ -15,6 +15,7 @@ PC에서 개발하고 아이패드 Safari에서 URL 접속으로 사용한다. (
 - 화면 모듈 계약: `mount(container, params) → unmount()`
 - 모델(순수)/뷰 분리, `engine/`(storage·sound·dom) 공용 유틸
 - 단어 데이터는 `src/data/decks.js`(정적), 진행상황은 localStorage
+- 홈 하단 백업/복원 — 진행상황을 JSON 파일로 내보내고 불러온다(기기 데이터가 지워져도 복구 가능)
 - 학습은 4지선다 퀴즈 하나. 정답/오답 효과음은 Web Audio로 합성(음원 파일 없음)
 
 ## 새 덱 추가

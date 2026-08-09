@@ -1,9 +1,11 @@
-// 홈 — 테마 카드 그리드 + 맨 끝에 랜덤 카드.
+// 홈 — 테마 카드 그리드 + 맨 끝에 랜덤 카드, 하단에 백업/복원.
 // 우상단 배지에 지금까지 알게 된 단어 수를 누적으로 보여준다.
 // 계약: mountHome(container) → unmount().
-import { el, clear } from '../engine/dom.js';
+import { el, clear, button } from '../engine/dom.js';
 import { DECKS, RANDOM_DECK } from '../data/decks.js';
 import { countKnown } from '../model/progress.js';
+import { buildBackup, parseBackup, countBackup, applyBackup } from '../model/backup.js';
+import { saveTextFile, pickTextFile } from '../engine/file.js';
 
 export function mountHome(container) {
   const home = el('div', 'home');
@@ -38,10 +40,80 @@ export function mountHome(container) {
   const random = deckCard(RANDOM_DECK, knownAll, totalAll, `#/quiz/${RANDOM_DECK.id}`);
   random.classList.add('random');
   grid.append(random);
-
   home.append(grid);
 
+  // ---- 백업/복원 (어른용) — 작게, 눈에 덜 띄게 ----
+  const note = el('div', 'tool-note');
+  const tools = el('div', 'home-tools');
+  tools.append(
+    button('백업', onBackup, 'tool-btn'),
+    button('복원', onRestore, 'tool-btn')
+  );
+  home.append(tools, note);
+
   container.appendChild(home);
+
+  async function onBackup() {
+    const now = new Date();
+    const data = buildBackup(now.toISOString());
+    const n = countBackup(data);
+    if (n === 0) { say('아직 저장할 기록이 없어요.'); return; }
+
+    const name = `jin-word-study-${now.toISOString().slice(0, 10)}.json`;
+    const text = JSON.stringify(data, null, 2);
+    try {
+      const how = await saveTextFile(name, text);
+      if (how === 'cancel') return;
+      say(`${n}개 기록을 ${name} 로 내보냈어요.`);
+    } catch {
+      showRaw(text);  // 공유·다운로드 둘 다 막힌 환경
+    }
+  }
+
+  async function onRestore() {
+    let picked;
+    try {
+      picked = await pickTextFile();
+    } catch {
+      say('파일을 열 수 없어요.');
+      return;
+    }
+    if (!picked) return;
+
+    let data;
+    try {
+      data = parseBackup(picked.text);
+    } catch (e) {
+      say(e.message);
+      return;
+    }
+    const n = countBackup(data);
+    const when = String(data.savedAt || '').slice(0, 10);
+    if (!confirm(`백업(${when})에 '알아요' ${n}개가 들어 있어요.\n지금 기록을 덮어씁니다. 계속할까요?`)) return;
+
+    const { applied, skipped } = applyBackup(data);
+    if (applied === 0) { say('복원할 테마가 없었어요.'); return; }
+    // 카드·배지 숫자를 다시 그리려면 화면을 새로 그려야 한다.
+    location.reload();
+  }
+
+  function say(msg) {
+    clear(note);
+    note.textContent = msg;
+  }
+
+  // 최후 수단 — 내용을 화면에 띄워 직접 복사하게 한다.
+  function showRaw(text) {
+    clear(note);
+    note.append(el('div', null, '파일로 저장할 수 없는 환경이에요. 아래 내용을 복사해 두세요.'));
+    const ta = el('textarea', 'raw-box');
+    ta.value = text;
+    ta.readOnly = true;
+    note.append(ta);
+    ta.focus();
+    ta.select();
+  }
+
   return function unmount() {
     clear(container);
   };

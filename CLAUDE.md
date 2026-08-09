@@ -44,7 +44,7 @@ export function mount(container, params) {
 
 ### 모델 / 뷰 분리 (원칙)
 
-- **모델(순수)**: `src/model/`(예: `progress.js` 학습 진행상황) — DOM/캔버스를 모른다. 단위 테스트 용이.
+- **모델(순수)**: `src/model/` — `progress.js`(진행상황), `quiz.js`(보기 생성·출제), `backup.js`(백업/복원). DOM을 모른다. 단위 테스트 용이.
 - **데이터(정적)**: `src/data/decks.js` — 단어/덱 데이터. `{ id, word, meaning, emoji }` + 덱 `{ id, title, emoji, accent, words[] }`.
 - **뷰**: `src/home/`, `src/screens/*` — 위 모델/데이터를 DOM 렌더 + 입력으로 연결.
 
@@ -52,6 +52,8 @@ export function mount(container, params) {
 
 - `dom.js` — `el(tag,cls,text)`, `clear(node)`, `button(label,onClick,cls)`.
 - `storage.js` — `load(key,fallback)` / `save(key,value)`. `jws:` 네임스페이스로 localStorage 저장.
+- `file.js` — `saveTextFile(name,text)` / `pickTextFile()`. iOS는 `<a download>`가 막히는 경우가 있어
+  **공유 시트(Web Share)를 먼저 쓰고 다운로드로 폴백**한다.
 - `sound.js` — `playCorrect()` / `playWrong()`. 음원 파일 없이 Web Audio API로 효과음을 합성한다. `AudioContext`는 하나만 만들어 재사용. **iOS는 사용자 제스처(탭) 후에만 소리가 난다** → 버튼 핸들러 안에서 부를 것.
 
 ### 참조 구현: 퀴즈 (`src/screens/quiz/`)

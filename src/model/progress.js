@@ -32,6 +32,12 @@ export function recordAnswer(deckId, wordId, correct) {
   return p;
 }
 
+// 백업 복원용 — 통째로 덮어쓴다. normalize 를 거치므로 손상된 값은 걸러진다.
+export function setProgress(deckId, raw) {
+  save(key(deckId), normalize(raw));
+  return getProgress(deckId);
+}
+
 export function isMastered(progress, wordId) {
   const v = progress && progress[wordId];
   if (typeof v === 'string') return v === 'known'; // 정규화 안 된 구버전 값이 들어와도 안전하게
