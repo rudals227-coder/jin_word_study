@@ -20,7 +20,8 @@
 | 빌드/개발서버 | **Vite** | HMR, 코드 스플리팅, `base:'./'`로 서브경로 배포 |
 | UI | **DOM + CSS 중심** | 단어 앱은 텍스트/카드 위주 → Canvas는 **선택적**(그림카드·애니메이션·미니게임에만) |
 | 저장 | **localStorage** | 진행상황·즐겨찾기·설정. 단어 데이터는 정적 JS |
-| 효과음 | **Web Audio API (합성)** | 정답/오답음을 코드로 생성. 음원 파일·CDN 없음. (발음 TTS는 도입했다가 제거) |
+| 효과음 | **Web Audio API (합성)** | 정답/오답음을 코드로 생성. 음원 파일·CDN 없음. |
+| 읽어주기 | **Web Speech API (TTS)** | 퀴즈 예문을 읽어준다. 기기 내장 음성이라 무료·오프라인. 목소리 품질은 기기 설정에 좌우된다. |
 | 이미지/아이콘 | **이모지 / 인라인 SVG / 번들 에셋** | 외부 CDN 금지(오프라인·정적 배포 안전) |
 | 대상 | 아이패드 Safari | 터치·큰 글씨·큰 버튼 |
 
@@ -36,7 +37,7 @@
   }
   ```
 - **레지스트리**: `src/screens/registry.js` 한 곳에서 학습 화면을 동적 import.
-- **공용 유틸(`src/engine/`)**: `storage.js`(localStorage), `sound.js`(효과음), `dom.js`(헬퍼).
+- **공용 유틸(`src/engine/`)**: `dom.js`(헬퍼), `storage.js`(localStorage), `sound.js`(효과음), `speech.js`(예문 읽어주기), `file.js`(백업 파일 입출력).
 - **순수 모델(`src/model/`)**: 진행상황·채점·간격반복(SRS) 계산은 DOM을 모르는 순수 함수로.
 
 ## 3. 데이터 모델 (예시)
@@ -103,7 +104,7 @@ src/
     quiz.js             # 보기 생성·출제 선택(순수)
     backup.js           # 백업 생성·검증·복원(순수)
   engine/
-    dom.js storage.js sound.js file.js
+    dom.js storage.js sound.js speech.js file.js
 ```
 
 ---
@@ -119,7 +120,7 @@ src/
 | 퀴즈 | 단어+예문 제시 → 뜻 4지선다(번호 1~4). 맞히면 풀에서 제외, 틀리면 재출제 |
 | 진행상황 | localStorage(`jws:progress:<덱id>`), 덱별 `{c: 맞힌 수, w: 틀린 수}` |
 | 백업 | 홈 하단 자물쇠 + 백업/복원. JSON 파일로 내보내기/불러오기 |
-| 소리 | Web Audio 합성 정답/오답음(음원 파일 없음) |
+| 소리 | Web Audio 합성 정답/오답음(음원 파일 없음) + 예문 읽어주기(Web Speech TTS) |
 | 배포 | `main` push → GitHub Actions → Pages 자동 배포 |
 
 ### 결정 기록 (왜 이렇게 했는가)
