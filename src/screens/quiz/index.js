@@ -122,7 +122,7 @@ export function mount(container, { deckId } = {}) {
     for (const b of grid.children) {
       if (b.dataset.meaning === picked) b.classList.add(ok ? 'correct' : 'wrong');
     }
-    qMark.textContent = ok ? '⭕' : '❌ 아니에요';
+    qMark.textContent = ok ? '⭕ 정답' : '❌ 아니에요';
     qMark.classList.add(ok ? 'ok' : 'no');
     renderProgress();
 
