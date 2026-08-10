@@ -2,6 +2,7 @@
 //   #/             → 홈 (레벨 1)
 //   #/level/<n>    → 홈을 그 레벨로
 //   #/quiz/<id>    → 4지선다 퀴즈
+//   #/notes/<n>    → 그 레벨의 틀린 단어 노트(부모용)
 // 레벨을 URL 에 두는 이유: 새로고침해도 안전하고, 퀴즈를 마치고 홈으로 돌아올 때
 // 원래 레벨로 복귀해야 하기 때문. 메모리 상태로 두면 매번 레벨 1 로 떨어진다.
 // 화면 이탈 시 이전 화면의 unmount 를 호출해 타이머·이벤트·DOM 을 정리한다.
@@ -9,7 +10,7 @@ import { mountHome } from './home/home.js';
 import { getScreen } from './screens/registry.js';
 import { clear } from './engine/dom.js';
 
-const SCREEN_BY_ROUTE = { quiz: 'quiz' };
+const SCREEN_BY_ROUTE = { quiz: 'quiz', notes: 'notes' };
 
 export function startRouter(container) {
   let currentUnmount = null;

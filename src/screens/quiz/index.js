@@ -201,11 +201,8 @@ export function mount(container, { deckId } = {}) {
     qMark.classList.add(ok ? 'ok' : 'no');
     renderProgress();
 
-    // 레벨 2 에서 틀리면 정답 카드를 다시 띄워 배울 기회를 준다. 그 단어는 풀에 남는다.
-    if (!ok && useIntro && !review) {
-      timer = setTimeout(() => showCard(current, '다시 볼까요'), 900);
-      return;
-    }
+    // 틀려도 정답을 알려주지 않는다. 그 단어는 풀에 남아 다시 나오고,
+    // 레벨을 다 푼 뒤 '틀린 단어' 노트에서 부모와 함께 본다.
     timer = setTimeout(next, ok ? 900 : 1100);
   }
 

@@ -3,6 +3,7 @@
 //   각 모듈은 mount(container, params) → unmount() 를 export 해야 함.
 const SCREENS = {
   quiz: { load: () => import('./quiz/index.js') },
+  notes: { load: () => import('./notes/index.js') },
 };
 
 export function getScreen(id) {

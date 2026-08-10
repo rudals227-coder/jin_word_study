@@ -68,6 +68,25 @@ export function resetDeck(deckId) {
   save(key(deckId), {});
 }
 
+// 한 번이라도 틀린 단어를 모은다(오답 노트용).
+// 지금 맞히는지와 무관하게 w > 0 이면 담고, 많이 틀린 것부터 정렬한다.
+export function wrongWords(decks) {
+  const out = [];
+  for (const d of decks) {
+    const p = getProgress(d.id);
+    for (const w of d.words) {
+      const n = ((p[w.id] && p[w.id].w) | 0);
+      if (n > 0) out.push({ deck: d, word: w, wrong: n });
+    }
+  }
+  return out.sort((a, b) => b.wrong - a.wrong);
+}
+
+// 그 레벨의 단어를 전부 맞혔는가.
+export function isLevelDone(decks) {
+  return decks.length > 0 && decks.every((d) => countKnown(d.id, d.words) === d.words.length);
+}
+
 // 덱에서 통과한 단어 수.
 export function countKnown(deckId, words) {
   const p = getProgress(deckId);

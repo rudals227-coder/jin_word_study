@@ -1,6 +1,10 @@
 /* ---------- reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* hidden 속성은 display 를 명시한 요소에서 무시된다(flex/grid 가 이깁니다).
+   이 규칙이 없으면 숨겼다고 생각한 화면이 그대로 남는다. */
+[hidden] { display: none !important; }
+
 :root {
   --bg: #fdf6ec;
   --surface: #ffffff;
@@ -241,6 +245,50 @@ button:active { transform: translateY(2px); }
   background: rgba(0, 0, 0, 0.08); border-radius: 6px; overflow: hidden;
 }
 .fc-bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 6px; transition: width 0.25s; }
+
+/* ---------- 틀린 단어 노트 (부모용) ---------- */
+/* 페이지는 스크롤되면 안 되므로 목록 안쪽에서만 스크롤한다. */
+.notes-hint {
+  flex: 0 0 auto; text-align: center; word-break: keep-all;
+  font-size: clamp(11px, 1.6vh, 14px); color: var(--muted);
+  padding: clamp(6px, 1.2vh, 12px) 0;
+}
+.notes-list {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; gap: clamp(7px, 1.2vh, 12px);
+  padding-bottom: 8px;
+}
+.note-row {
+  --accent: #ff6b6b;
+  background: var(--surface);
+  border-left: 6px solid var(--accent);
+  border-radius: 14px;
+  padding: clamp(9px, 1.5vh, 14px) clamp(11px, 1.8vh, 16px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+}
+.note-theme { font-size: clamp(10px, 1.4vh, 12px); font-weight: 800; color: var(--muted); }
+.note-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: 2px; }
+.note-word { font-size: clamp(19px, 2.9vh, 27px); font-weight: 900; }
+.note-meaning { font-size: clamp(15px, 2.3vh, 21px); font-weight: 800; color: var(--accent); }
+.note-count { margin-left: auto; font-size: clamp(10px, 1.4vh, 12px); font-weight: 800; color: #c92a2a; }
+.note-example-row { display: flex; align-items: center; gap: 9px; margin-top: 6px; }
+.note-say {
+  flex: 0 0 auto; display: grid; place-items: center;
+  width: clamp(32px, 4.6vh, 42px); height: clamp(32px, 4.6vh, 42px);
+  padding: 0; border-radius: 50%; font-size: clamp(13px, 2vh, 18px);
+  border-color: rgba(0, 0, 0, 0.10);
+}
+.note-example { font-size: clamp(13px, 2vh, 19px); color: var(--muted); line-height: 1.35; }
+
+.notes-empty {
+  flex: 1 1 auto; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: clamp(6px, 1.2vh, 12px);
+  text-align: center; color: var(--muted);
+}
+.notes-empty-emoji { font-size: clamp(40px, 8vh, 76px); }
+.notes-empty-title { font-size: clamp(20px, 3.4vh, 30px); font-weight: 900; color: var(--text); }
+.notes-empty-sub { font-size: clamp(13px, 2vh, 17px); word-break: keep-all; }
 
 /* ---------- 퀴즈 ---------- */
 /* 위 여백 1 : 아래 여백 1.6 → 문제·보기 덩어리가 화면 가운데보다 살짝 위에 온다. */

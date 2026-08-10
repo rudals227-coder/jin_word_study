@@ -3,7 +3,7 @@
 // 계약: mountHome(container, { level }) → unmount().
 import { el, clear, button } from '../engine/dom.js';
 import { LEVELS, getLevel, getDecks, randomDeckFor } from '../data/decks.js';
-import { countKnown } from '../model/progress.js';
+import { countKnown, wrongWords, isLevelDone } from '../model/progress.js';
 import { buildBackup, parseBackup, countBackup, applyBackup } from '../model/backup.js';
 import { saveTextFile, pickTextFile } from '../engine/file.js';
 
@@ -88,8 +88,14 @@ export function mountHome(container, { level = 1 } = {}) {
   let unlocked = false;
   let lockTimer = null;
 
+  // 틀린 단어 노트 — 레벨을 다 푼 뒤 부모가 열어 함께 본다.
+  const wrongCount = lv.ready ? wrongWords(decks).length : 0;
+  const levelDone = lv.ready && isLevelDone(decks);
+  const notesBtn = button(`📕 틀린 단어 ${wrongCount}`, onNotes, 'tool-btn');
+
   const tools = el('div', 'home-tools');
   tools.append(lockBtn, backupBtn, restoreBtn);
+  if (lv.ready) tools.append(notesBtn);
   home.append(tools, note);
   setLocked(true);
 
@@ -101,6 +107,7 @@ export function mountHome(container, { level = 1 } = {}) {
     lockBtn.classList.toggle('unlocked', !locked);
     backupBtn.disabled = locked;
     restoreBtn.disabled = locked;
+    notesBtn.disabled = locked || !levelDone;
     if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
     if (!locked) lockTimer = setTimeout(() => setLocked(true), LOCK_AFTER);
   }
@@ -112,6 +119,12 @@ export function mountHome(container, { level = 1 } = {}) {
   }
 
   // 백업은 레벨과 무관하게 전체 기록을 담는다(덱 id 가 전역 유일하므로 그대로 된다).
+  function onNotes() {
+    if (!unlocked) return;
+    if (!levelDone) { say(`${lv.title}을 다 풀면 열려요.`); return; }
+    location.hash = `#/notes/${lv.n}`;
+  }
+
   async function onBackup() {
     if (!unlocked) return;
     const now = new Date();
