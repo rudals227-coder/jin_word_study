@@ -15,8 +15,9 @@ import { getProgress, recordAnswer, markSeen, isMastered, hasSeen } from '../../
 import { playCorrect, playWrong } from '../../engine/sound.js';
 import { speak, cancel as cancelSpeech, supported as canSpeak } from '../../engine/speech.js';
 
-const INTRO_BATCH = 5;   // 한 번에 소개하는 새 단어 수. 더 늘리면 앞에서 본 걸 잊는다.
+const INTRO_BATCH = 5;      // 한 번에 소개하는 새 단어 수. 더 늘리면 앞에서 본 걸 잊는다.
 const INTRO_FROM_LEVEL = 2;
+const REVEAL_MS = 1800;     // 뜻을 보여주고 다음 카드로 넘어가기까지
 
 // 랜덤이면 그 레벨 전체 단어, 아니면 해당 테마. 어느 쪽이든 소속 테마 id(deckId)를 붙여 둔다.
 function buildDeck(id) {
@@ -88,7 +89,8 @@ export function mount(container, { deckId } = {}) {
   const cardExampleRow = el('div', 'qz-example-row');
   cardExampleRow.append(cardSay, cardExample);
   if (!canSpeak()) cardSay.hidden = true;
-  const cardNext = button('알겠어요', () => { cancelSpeech(); afterCard(); }, 'qz-card-btn');
+  // 뜻을 바로 보여주지 않는다 — 단어를 보고 먼저 떠올려 보게 한 뒤 공개한다.
+  const cardNext = button('뜻 보기', revealCard, 'qz-card-btn');
   card.append(cardTag, cardWord, cardMeaning, cardExampleRow, cardNext);
 
   const done = el('div', 'qz-done hidden');
@@ -110,15 +112,26 @@ export function mount(container, { deckId } = {}) {
     grid.hidden = true;
   }
 
-  // 소개 카드 / 오답 후 정답 카드. tag 로 둘을 구분한다.
+  // 소개 카드. 뜻은 감춘 채로 시작한다.
+  // 자리는 비워두고(visibility) 감춰서, 뜻이 나타날 때 카드가 덜컥 커지지 않게 한다.
   function showCard(w, tag) {
     current = w;
     cardTag.textContent = tag;
     cardWord.textContent = w.word;
     cardMeaning.textContent = w.meaning;
+    cardMeaning.classList.add('invisible');
+    cardNext.classList.remove('invisible');
     cardExample.textContent = w.example || '';
     cardExampleRow.hidden = !w.example;
     showCardUI();
+  }
+
+  // 뜻을 보여주고 잠시 뒤 다음 카드로. 버튼은 자리를 남긴 채 사라져 레이아웃이 안 흔들린다.
+  function revealCard() {
+    cancelSpeech();
+    cardMeaning.classList.remove('invisible');
+    cardNext.classList.add('invisible');
+    timer = setTimeout(afterCard, REVEAL_MS);
   }
 
   // 소개 카드에서 '알겠어요' 를 눌렀을 때

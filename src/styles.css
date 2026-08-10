@@ -5,6 +5,9 @@
    이 규칙이 없으면 숨겼다고 생각한 화면이 그대로 남는다. */
 [hidden] { display: none !important; }
 
+/* 자리는 남기고 감춘다 — 나타날 때 레이아웃이 밀리지 않게. */
+.invisible { visibility: hidden; }
+
 :root {
   --bg: #fdf6ec;
   --surface: #ffffff;
