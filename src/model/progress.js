@@ -68,6 +68,17 @@ export function resetDeck(deckId) {
   save(key(deckId), {});
 }
 
+// 오답 노트에서 '알았어요' 를 눌렀을 때 — 틀린 기록만 지운다.
+// 맞힌 횟수(c)와 소개 여부(s)는 건드리지 않는다. 노트에서 점수가 오르면 안 되기 때문.
+export function clearWrong(deckId, wordId) {
+  const p = getProgress(deckId);
+  const cur = p[wordId];
+  if (!cur) return p;
+  p[wordId] = { c: cur.c, w: 0, s: cur.s };
+  save(key(deckId), p);
+  return p;
+}
+
 // 한 번이라도 틀린 단어를 모은다(오답 노트용).
 // 지금 맞히는지와 무관하게 w > 0 이면 담고, 많이 틀린 것부터 정렬한다.
 export function wrongWords(decks) {
