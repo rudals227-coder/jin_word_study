@@ -82,11 +82,6 @@ export function wrongWords(decks) {
   return out.sort((a, b) => b.wrong - a.wrong);
 }
 
-// 그 레벨의 단어를 전부 맞혔는가.
-export function isLevelDone(decks) {
-  return decks.length > 0 && decks.every((d) => countKnown(d.id, d.words) === d.words.length);
-}
-
 // 덱에서 통과한 단어 수.
 export function countKnown(deckId, words) {
   const p = getProgress(deckId);
