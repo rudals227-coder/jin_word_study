@@ -15,7 +15,9 @@
 // 뜻이 하나로 딱 떨어지는 단어만 담는다(다의어는 4지선다 정답이 모호해진다).
 // 새 테마는 여기에 객체 하나만 추가하면 홈에 자동 노출된다.
 
-export const DECKS = [
+import { DECKS_L2 } from './decks-l2.js';
+
+const DECKS_L1 = [
   {
     id: 'fruits',
     title: '과일',
@@ -663,10 +665,13 @@ export const DECKS = [
   },
 ];
 
+// 레벨 1 + 레벨 2 를 한 배열로. 덱 id 가 전역 유일하므로 그대로 이어 붙이면 된다.
+export const DECKS = [...DECKS_L1, ...DECKS_L2];
+
 // 레벨 — 홈 상단에서 전환한다. ready:false 면 아직 단어가 없어 'coming soon' 만 보여준다.
 export const LEVELS = [
   { n: 1, title: '레벨 1', ready: true },
-  { n: 2, title: '레벨 2', ready: false },
+  { n: 2, title: '레벨 2', ready: true },
   { n: 3, title: '레벨 3', ready: false },
   { n: 4, title: '레벨 4', ready: false },
   { n: 5, title: '레벨 5', ready: false },

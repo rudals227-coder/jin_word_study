@@ -10,11 +10,16 @@ export const MASTER_AT = 1;
 const key = (deckId) => 'progress:' + deckId;
 
 // 구버전 형식('known'|'learning' 문자열)으로 저장된 값도 읽을 수 있게 정규화.
+//   s = 뜻을 소개 카드로 본 적 있음(레벨 2 학습 흐름에서 쓴다).
+//   맞히거나 틀린 적이 있으면 어차피 본 것이므로 s 를 세워 옛 기록도 자연스럽게 맞춘다.
 function normalize(raw) {
   const out = {};
   for (const [id, v] of Object.entries(raw || {})) {
-    if (typeof v === 'string') out[id] = { c: v === 'known' ? MASTER_AT : 0, w: 0 };
-    else if (v && typeof v === 'object') out[id] = { c: v.c | 0, w: v.w | 0 };
+    if (typeof v === 'string') out[id] = { c: v === 'known' ? MASTER_AT : 0, w: 0, s: 1 };
+    else if (v && typeof v === 'object') {
+      const c = v.c | 0, w = v.w | 0;
+      out[id] = { c, w, s: (v.s | 0) || c || w ? 1 : 0 };
+    }
   }
   return out;
 }
@@ -36,6 +41,21 @@ export function recordAnswer(deckId, wordId, correct) {
 export function setProgress(deckId, raw) {
   save(key(deckId), normalize(raw));
   return getProgress(deckId);
+}
+
+// 소개 카드로 뜻을 보여줬다고 기록. 점수(c)는 건드리지 않는다 — 점수는 채점으로만 오른다.
+export function markSeen(deckId, wordId) {
+  const p = getProgress(deckId);
+  const cur = p[wordId] || { c: 0, w: 0, s: 0 };
+  p[wordId] = { c: cur.c, w: cur.w, s: 1 };
+  save(key(deckId), p);
+  return p;
+}
+
+export function hasSeen(progress, wordId) {
+  const v = progress && progress[wordId];
+  if (typeof v === 'string') return true;
+  return !!(v && ((v.s | 0) || (v.c | 0) || (v.w | 0)));
 }
 
 export function isMastered(progress, wordId) {
