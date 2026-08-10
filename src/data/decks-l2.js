@@ -7,7 +7,9 @@
 // ★ 덱 id 는 레벨을 통틀어 유일해야 하므로 전부 'l2-' 접두사.
 //   (진행상황 저장 키와 백업 키가 곧 덱 id 이기 때문. decks.js 의 idPrefix 참고)
 
-export const DECKS_L2 = [
+import { MORE_L2 } from './decks-l2-more.js';
+
+const BASE_L2 = [
   {
     id: 'l2-think',
     title: '생각·마음',
@@ -230,8 +232,6 @@ export const DECKS_L2 = [
     accent: '#4c6ef5',
     level: 2,
     words: [
-      { id: 'always', word: 'always', meaning: '항상', example: 'He is always on time.' },
-      { id: 'never', word: 'never', meaning: '결코', example: 'She never tells lies.' },
       { id: 'often', word: 'often', meaning: '자주', example: 'We often walk together.' },
       { id: 'sometimes', word: 'sometimes', meaning: '가끔', example: 'Sometimes I feel tired.' },
       { id: 'usually', word: 'usually', meaning: '보통', example: 'I usually wake at seven.' },
@@ -242,7 +242,6 @@ export const DECKS_L2 = [
       { id: 'immediately', word: 'immediately', meaning: '즉시', example: 'Come here immediately.' },
       { id: 'recently', word: 'recently', meaning: '최근에', example: 'We recently moved here.' },
       { id: 'forever', word: 'forever', meaning: '영원히', example: 'Nothing lasts forever.' },
-      { id: 'soon', word: 'soon', meaning: '곧', example: 'The show starts soon.' },
       { id: 'later', word: 'later', meaning: '나중에', example: 'I will call you later.' },
       { id: 'meanwhile', word: 'meanwhile', meaning: '그동안', example: 'Meanwhile, I cleaned my room.' },
       { id: 'early', word: 'early', meaning: '이른', example: 'We took an early bus.' },
@@ -361,7 +360,6 @@ export const DECKS_L2 = [
       { id: 'amount', word: 'amount', meaning: '양', example: 'A small amount of salt is enough.' },
       { id: 'average', word: 'average', meaning: '평균', example: 'His score is above average.' },
       { id: 'double', word: 'double', meaning: '두 배', example: 'The price is double now.' },
-      { id: 'half', word: 'half', meaning: '절반', example: 'I ate half of the pizza.' },
       { id: 'quarter', word: 'quarter', meaning: '사분의 일', example: 'Cut it into a quarter.' },
       { id: 'several', word: 'several', meaning: '여러', example: 'Several birds sat on the wire.' },
       { id: 'various', word: 'various', meaning: '다양한', example: 'The shop sells various hats.' },
@@ -380,7 +378,6 @@ export const DECKS_L2 = [
       { id: 'width', word: 'width', meaning: '너비', example: 'The width of the door is small.' },
       { id: 'height', word: 'height', meaning: '높이', example: 'The height of the tree is amazing.' },
       { id: 'depth', word: 'depth', meaning: '깊이', example: 'The depth of the lake is unknown.' },
-      { id: 'size', word: 'size', meaning: '크기', example: 'What size do you wear?' },
       { id: 'volume', word: 'volume', meaning: '부피', example: 'The volume of the box is large.' },
       { id: 'percent', word: 'percent', meaning: '퍼센트', example: 'Ninety percent were correct.' },
       { id: 'majority', word: 'majority', meaning: '다수', example: 'The majority agreed with us.' },
@@ -448,8 +445,6 @@ export const DECKS_L2 = [
       { id: 'corner', word: 'corner', meaning: '모퉁이', example: 'Turn left at the corner.' },
       { id: 'center', word: 'center', meaning: '중심', example: 'The fountain is in the center.' },
       { id: 'surface', word: 'surface', meaning: '표면', example: 'The surface is very smooth.' },
-      { id: 'bottom', word: 'bottom', meaning: '아래쪽', example: 'Look at the bottom of the page.' },
-      { id: 'top', word: 'top', meaning: '위쪽', example: 'We reached the top.' },
       { id: 'front', word: 'front', meaning: '앞쪽', example: 'Sit in the front.' },
       { id: 'back', word: 'back', meaning: '뒤쪽', example: 'The back of the room is empty.' },
       { id: 'side', word: 'side', meaning: '옆쪽', example: 'Stand at my side.' },
@@ -474,7 +469,6 @@ export const DECKS_L2 = [
       { id: 'valley', word: 'valley', meaning: '골짜기', example: 'A river runs through the valley.' },
       { id: 'cave', word: 'cave', meaning: '동굴', example: 'Bats sleep in the cave.' },
       { id: 'cliff', word: 'cliff', meaning: '절벽', example: 'The cliff is very steep.' },
-      { id: 'hill', word: 'hill', meaning: '언덕', example: 'We ran up the hill.' },
     ],
   },
   {
@@ -501,14 +495,10 @@ export const DECKS_L2 = [
       { id: 'personality', word: 'personality', meaning: '개성', example: 'He has a strong personality.' },
       { id: 'behavior', word: 'behavior', meaning: '행동', example: 'Your behavior was excellent.' },
       { id: 'manner', word: 'manner', meaning: '태도', example: 'He spoke in a kind manner.' },
-      { id: 'family', word: 'family', meaning: '가족', example: 'My family eats together.' },
       { id: 'parent', word: 'parent', meaning: '부모', example: 'One parent must come.' },
       { id: 'cousin', word: 'cousin', meaning: '사촌', example: 'My cousin lives nearby.' },
-      { id: 'uncle', word: 'uncle', meaning: '삼촌', example: 'My uncle drives a truck.' },
-      { id: 'aunt', word: 'aunt', meaning: '이모', example: 'My aunt bakes great bread.' },
       { id: 'nephew', word: 'nephew', meaning: '조카', example: 'My nephew is only three.' },
       { id: 'twin', word: 'twin', meaning: '쌍둥이', example: 'She has a twin sister.' },
-      { id: 'baby', word: 'baby', meaning: '아기', example: 'The baby is sleeping.' },
       { id: 'elder', word: 'elder', meaning: '어르신', example: 'Respect the elders.' },
       { id: 'teammate', word: 'teammate', meaning: '팀원', example: 'Pass the ball to your teammate.' },
       { id: 'rival', word: 'rival', meaning: '경쟁자', example: 'They are friendly rivals.' },
@@ -577,11 +567,9 @@ export const DECKS_L2 = [
       { id: 'muscle', word: 'muscle', meaning: '근육', example: 'My leg muscle hurts.' },
       { id: 'breath', word: 'breath', meaning: '숨', example: 'Take a deep breath.' },
       { id: 'appetite', word: 'appetite', meaning: '식욕', example: 'I have no appetite today.' },
-      { id: 'rest', word: 'rest', meaning: '휴식', example: 'You need a long rest.' },
       { id: 'wound', word: 'wound', meaning: '상처', example: 'Clean the wound first.' },
       { id: 'fever', word: 'fever', meaning: '열', example: 'She has a high fever.' },
       { id: 'cough', word: 'cough', meaning: '기침', example: 'Cover your mouth when you cough.' },
-      { id: 'pain', word: 'pain', meaning: '아픔', example: 'The pain is gone now.' },
       { id: 'cure', word: 'cure', meaning: '낫게 하다', example: 'This herb can cure a cold.' },
       { id: 'nutrition', word: 'nutrition', meaning: '영양', example: 'Fruit gives good nutrition.' },
       { id: 'vitamin', word: 'vitamin', meaning: '비타민', example: 'Oranges have vitamin C.' },
@@ -646,3 +634,10 @@ export const DECKS_L2 = [
     ],
   },
 ];
+
+// 기본 묶음에 추가 단어(decks-l2-more.js)를 테마별로 합친다.
+// 파일이 너무 길어지지 않게 나눠 뒀을 뿐, 구조는 동일하다.
+export const DECKS_L2 = BASE_L2.map((d) => ({
+  ...d,
+  words: [...d.words, ...(MORE_L2[d.id] || [])],
+}));
