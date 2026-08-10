@@ -12,7 +12,7 @@ import { el, clear, button } from '../../engine/dom.js';
 import { getDecks, randomDeckFor, levelOfRandomId, allWords, getDeck } from '../../data/decks.js';
 import { makeChoices, pickNext, pickReview } from '../../model/quiz.js';
 import { getProgress, recordAnswer, markSeen, isMastered, hasSeen } from '../../model/progress.js';
-import { playCorrect, playWrong } from '../../engine/sound.js';
+import { playCorrect, playWrong, playReveal } from '../../engine/sound.js';
 import { speak, cancel as cancelSpeech, supported as canSpeak } from '../../engine/speech.js';
 
 const INTRO_BATCH = 5;      // 한 번에 소개하는 새 단어 수. 더 늘리면 앞에서 본 걸 잊는다.
@@ -129,6 +129,7 @@ export function mount(container, { deckId } = {}) {
   // 뜻을 보여주고 잠시 뒤 다음 카드로. 버튼은 자리를 남긴 채 사라져 레이아웃이 안 흔들린다.
   function revealCard() {
     cancelSpeech();
+    playReveal();   // 탭 핸들러 안이라 iOS 에서도 소리가 난다
     cardMeaning.classList.remove('invisible');
     cardNext.classList.add('invisible');
     timer = setTimeout(afterCard, REVEAL_MS);

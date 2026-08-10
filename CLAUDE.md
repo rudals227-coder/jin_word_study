@@ -60,7 +60,7 @@ export function mount(container, params) {
 - `speech.js` — `speak(text,{lang,rate})` / `cancel()` / `supported()`. 브라우저 내장 Web Speech(TTS).
   **iOS는 사용자 제스처(탭) 후에만 소리가 난다** → 버튼 핸들러 안에서 부를 것.
   다음 문제로 넘어가거나 화면을 떠날 때 `cancel()` 필수.
-- `sound.js` — `playCorrect()` / `playWrong()`. 음원 파일 없이 Web Audio API로 효과음을 합성한다. `AudioContext`는 하나만 만들어 재사용. **iOS는 사용자 제스처(탭) 후에만 소리가 난다** → 버튼 핸들러 안에서 부를 것.
+- `sound.js` — `playCorrect()` / `playWrong()` / `playReveal()`(소개 카드 펼칠 때). 음원 파일 없이 Web Audio API로 효과음을 합성한다. `AudioContext`는 하나만 만들어 재사용. **iOS는 사용자 제스처(탭) 후에만 소리가 난다** → 버튼 핸들러 안에서 부를 것.
 
 ### 참조 구현: 퀴즈 (`src/screens/quiz/`)
 

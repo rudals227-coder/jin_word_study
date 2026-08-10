@@ -50,6 +50,15 @@ export function playCorrect() {
   ]);
 }
 
+// 카드를 펼칠 때 — 맑은 종소리 하나. 정답음(3음 아르페지오)과 확실히 달라야
+// 아이가 '뜻 보기 = 맞혔다' 로 오해하지 않는다. 그래서 한 음만, 더 작게.
+export function playReveal() {
+  play([
+    { f: 880.00, at: 0.00, dur: 0.30, peak: 0.09, type: 'sine' },   // A5
+    { f: 1318.51, at: 0.00, dur: 0.22, peak: 0.04, type: 'sine' },  // E6 — 살짝 반짝이는 배음
+  ]);
+}
+
 // 오답 — 낮게 떨어지는 두 음. 아이가 겁먹지 않게 짧고 부드럽게.
 export function playWrong() {
   play([
